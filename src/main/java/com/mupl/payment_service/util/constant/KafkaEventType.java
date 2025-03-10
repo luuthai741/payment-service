@@ -4,7 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum KafkaEventType {
-    SONG_DELETED("SONG_DELETED");
+    SONG_DELETED("SONG_DELETED"),
+    PAYMENT_SUCCESS("PAYMENT_SUCCESS");
     private final String eventName;
 
     KafkaEventType(String eventType) {

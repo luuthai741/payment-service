@@ -9,6 +9,7 @@ import com.mupl.payment_service.entity.PaymentEntity;
 import com.mupl.payment_service.entity.TransactionEntity;
 import com.mupl.payment_service.exception.BadRequestException;
 import com.mupl.payment_service.feign.MomoClient;
+import com.mupl.payment_service.kafka.producer.PaymentProducer;
 import com.mupl.payment_service.repository.PaymentRepository;
 import com.mupl.payment_service.repository.TransactionRepository;
 import com.mupl.payment_service.service.PaymentProcessService;
@@ -40,6 +41,7 @@ public class MomoPaymentProcessService implements PaymentProcessService {
     private final TransactionRepository transactionRepository;
     private final UserSubscriptionService userSubscriptionService;
     private final PaymentRepository paymentRepository;
+    private final PaymentProducer paymentProducer;
 
     @Override
     public PaymentType getProviderId() {
@@ -106,6 +108,7 @@ public class MomoPaymentProcessService implements PaymentProcessService {
         paymentRepository.save(paymentEntity);
         if (paymentStatus.equals(PaymentStatus.SUCCESS)) {
             userSubscriptionService.updateUserSubscription(paymentEntity.getPaymentId());
+            paymentProducer.sendPaymentSuccessEvent(paymentEntity.getPaymentId());
         }
         return PaymentProcessResponse.builder()
                 .paymentId(paymentEntity.getPaymentId())

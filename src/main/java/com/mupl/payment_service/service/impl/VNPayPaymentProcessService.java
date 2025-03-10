@@ -8,6 +8,7 @@ import com.mupl.payment_service.entity.PaymentEntity;
 import com.mupl.payment_service.entity.TransactionEntity;
 import com.mupl.payment_service.exception.BadRequestException;
 import com.mupl.payment_service.exception.InitPaymentException;
+import com.mupl.payment_service.kafka.producer.PaymentProducer;
 import com.mupl.payment_service.repository.PaymentRepository;
 import com.mupl.payment_service.repository.TransactionRepository;
 import com.mupl.payment_service.service.PaymentProcessService;
@@ -56,6 +57,7 @@ public class VNPayPaymentProcessService implements PaymentProcessService {
     private final PaymentRepository paymentRepository;
     private final Map<String, String> responseMap = new HashMap<>();
     private final UserSubscriptionService userSubscriptionService;
+    private final PaymentProducer paymentProducer;
 
     // TESTING PAYMENT ACCOUNT : NCB, 9704198526191432198, NGUYEN VAN A, 07/15, 123456
     @PostConstruct
@@ -126,6 +128,7 @@ public class VNPayPaymentProcessService implements PaymentProcessService {
         paymentRepository.save(paymentEntity);
         if (paymentStatus.equals(PaymentStatus.SUCCESS)) {
             userSubscriptionService.updateUserSubscription(paymentEntity.getPaymentId());
+            paymentProducer.sendPaymentSuccessEvent(paymentEntity.getPaymentId());
         }
         return PaymentProcessResponse.builder()
                 .paymentId(paymentEntity.getPaymentId())
