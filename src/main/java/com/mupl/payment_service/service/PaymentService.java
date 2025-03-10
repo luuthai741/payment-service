@@ -5,6 +5,7 @@ import com.mupl.payment_service.dto.request.PaymentRequest;
 import com.mupl.payment_service.dto.response.InitPaymentResponse;
 import com.mupl.payment_service.dto.response.PaymentCallResponse;
 import com.mupl.payment_service.dto.response.PaymentProcessResponse;
+import com.mupl.payment_service.dto.response.PaymentResponse;
 import com.mupl.payment_service.entity.PaymentEntity;
 import com.mupl.payment_service.entity.SubscriptionPlanEntity;
 import com.mupl.payment_service.repository.PaymentRepository;
@@ -70,5 +71,9 @@ public class PaymentService {
     public PaymentProcessResponse paymentProcess(PaymentCallResponse gatewayResponse) {
         PaymentProcessService paymentProcessService = paymentProcessServiceMap.get(gatewayResponse.getPaymentType());
         return paymentProcessService.paymentProcess(gatewayResponse);
+    }
+
+    public PaymentResponse getPaymentById(String paymentId) {
+        return paymentRepository.findByPaymentId(paymentId);
     }
 }
