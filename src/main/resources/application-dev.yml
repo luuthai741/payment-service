@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: payment-service
+  datasource:
+    url: jdbc:mysql://${DB_URL:192.168.1.10}:${DB_PORT:3306}/${DB_NAME:mupl_payment}
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:password}
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  kafka:
+    bootstrap-servers: 192.168.1.10:29092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+    properties:
+      compression.type: lz4
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+      enable-auto-commit: true
+server:
+  port: 14000
+
+payment:
+  vn_pay:
+    client: ${VN_PAY_CLIENT:7S9Z7ZQP}
+    secret: ${VN_PAY_CLIENT:QS098R4BHGGXB7NYGUZ7QBX1WL2KNP6K}
+    payment-url: ${VN_PAY_PAYMENT_URL:https://sandbox.vnpayment.vn/paymentv2/vpcpay.html}
+    return-url: ${VN_PAY_PAYMENT_URL:http://localhost:14000/api/v1/mupl/payments/vn-pay/callback}
+    version: 2.1.0
+    command: pay
+    bankcode: NCB
+  momo:
+    client: ${MOMO_CLIENT:mTCKt9W3eU1m39TW}
+    secret: ${MOMO_CLIENT:SetA5RDnLHvt51AULf51DyauxUo3kDU6}
+    partner-code: ${MOMO_CLIENT:MOMOLRJZ20181206}
+    base-url: ${MOMO_PAYMENT_URL:https://test-payment.momo.vn/v2/gateway/api}
+    return-url: ${MOMO_PAYMENT_URL:http://localhost:14000/api/v1/mupl/payments/momo/callback}
